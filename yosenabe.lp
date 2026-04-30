@@ -1,13 +1,20 @@
-% 1. Each number must be moved to exactly one target cell (XX,YY)
-1 { target(X,Y,XX,YY) : cell(XX,YY), area(XX,YY,A) } 1 :- number(X,Y,N).
+% yosenabe1.lp
 
-% 2. The movement must be in a straight line (Horizontal or Vertical)
-:- target(X,Y,XX,YY), X != XX, Y != YY.
+% Possible targets: an area cell in same row OR same column as the number
+possible(X,Y,XX,Y)  :- number(X,Y,_), area(XX,Y,_), X != XX.
+possible(X,Y,X,YY)  :- number(X,Y,_), area(X,YY,_), Y != YY.
 
-% 3. Optimization: A number cannot stay in its original spot if that spot isn't an area
-% (Or simply ensure it moves to an area cell as defined in rule 1)
+% Each number is moved to exactly one possible target
+1 { target(X,Y,XX,YY) : possible(X,Y,XX,YY) } 1 :- number(X,Y,_).
 
-% Show only the target atoms as requested
-#show target/4.
+% Stops at the FIRST cell of the target's area along the direction
+% Going down  (Y < YY)
+:- target(X,Y,X,YY), Y  < YY, area(X,YY,A), area(X,Yp,A), Y  < Yp, Yp < YY.
+% Going up    (Y > YY)
+:- target(X,Y,X,YY), Y  > YY, area(X,YY,A), area(X,Yp,A), YY < Yp, Yp < Y.
+% Going right (X < XX)
+:- target(X,Y,XX,Y), X  < XX, area(XX,Y,A), area(Xp,Y,A), X  < Xp, Xp < XX.
+% Going left  (X > XX)
+:- target(X,Y,XX,Y), X  > XX, area(XX,Y,A), area(Xp,Y,A), XX < Xp, Xp < X.
 
 #show target/4.
