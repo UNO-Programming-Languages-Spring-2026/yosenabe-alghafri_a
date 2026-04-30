@@ -1,20 +1,21 @@
 % yosenabe1.lp
+% Q1: Move every number into a gray area along a straight line.
 
-% Possible targets: an area cell in same row OR same column as the number
-possible(X,Y,XX,Y)  :- number(X,Y,_), area(XX,Y,_), X != XX.
-possible(X,Y,X,YY)  :- number(X,Y,_), area(X,YY,_), Y != YY.
+% A possible target for a number is an area cell in the same row or column.
+possible(X,Y,XX,Y) :- number(X,Y,_), area(XX,Y,_), X != XX.
+possible(X,Y,X,YY) :- number(X,Y,_), area(X,YY,_), Y != YY.
 
-% Each number is moved to exactly one possible target
+% Choose exactly one target per number.
 1 { target(X,Y,XX,YY) : possible(X,Y,XX,YY) } 1 :- number(X,Y,_).
 
-% Stops at the FIRST cell of the target's area along the direction
-% Going down  (Y < YY)
+% The target must be the FIRST cell of its area along the direction of motion.
+% Vertical down  (Y < YY)
 :- target(X,Y,X,YY), Y  < YY, area(X,YY,A), area(X,Yp,A), Y  < Yp, Yp < YY.
-% Going up    (Y > YY)
+% Vertical up    (Y > YY)
 :- target(X,Y,X,YY), Y  > YY, area(X,YY,A), area(X,Yp,A), YY < Yp, Yp < Y.
-% Going right (X < XX)
+% Horizontal right (X < XX)
 :- target(X,Y,XX,Y), X  < XX, area(XX,Y,A), area(Xp,Y,A), X  < Xp, Xp < XX.
-% Going left  (X > XX)
+% Horizontal left  (X > XX)
 :- target(X,Y,XX,Y), X  > XX, area(XX,Y,A), area(Xp,Y,A), XX < Xp, Xp < X.
 
 #show target/4.
